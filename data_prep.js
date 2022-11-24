@@ -28,7 +28,7 @@ sequelize
   .catch((err) => console.log("Unable to connect to DB.", err));
 
 const Student = sequelize.define("Student", {
-  StudId: {
+  studId: {
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -79,7 +79,6 @@ exports.highGPA = () => {
 
     Student.findAll()
       .then((students) => {
-        console.log("highGPA: ", students);
         for (let i = 0; i < students.length; i++) {
           if (students[i].gpa > high) {
             high = students[i].gpa;
@@ -90,7 +89,7 @@ exports.highGPA = () => {
           ? resolve(highStudent)
           : reject("Failed finding student with highest GPA");
       })
-      .catch(reject("Failed finding student with highest GPA"));
+      .catch(() => reject("Failed finding student with highest GPA"));
   });
 };
 
@@ -110,9 +109,13 @@ exports.lowGPA = () => {
 
 exports.allStudents = () => {
   return new Promise((resolve, reject) => {
-    if (students.length > 0) {
-      resolve(students);
-    } else reject("No students.");
+    Student.findAll()
+      .then((students) => {
+        if (students.length > 0) {
+          resolve(students);
+        } else reject("No students.");
+      })
+      .catch(() => reject("No students."));
   });
 };
 
